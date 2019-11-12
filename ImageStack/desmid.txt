@@ -1,0 +1,7 @@
+desmid1.pgm
+desmid2.pgm
+desmid3.pgm
+desmid4.pgm
+desmid5.pgm
+desmid6.pgm
+desmid7.pgm
