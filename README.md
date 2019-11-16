@@ -12,7 +12,7 @@ The program takes in a stack of .pgm images (provided as a newline seperated fil
 <br/>
 
 ## Instructions to Run
-To compile code run the following command from the project root `javac @edof.txt`. To run the program use the command `java edof.EDoF <filename> <optional arguments>`.
+To compile code run the following command from the project root `javac @edof.txt`.<br/>To run the program use the command `java edof.EDoF <filename> <optional arguments>`.
 
 <br/>
 
