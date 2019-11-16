@@ -1,0 +1,3 @@
+wasp1.pgm
+wasp2.pgm
+wasp3.pgm

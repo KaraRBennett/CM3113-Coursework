@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - EDoF",
+            "request": "launch",
+            "mainClass": "EDoF"
+        }
+    ]
+}

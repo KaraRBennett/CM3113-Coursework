@@ -1,0 +1,15 @@
+mite01.pgm
+mite02.pgm
+mite03.pgm
+mite04.pgm
+mite05.pgm
+mite06.pgm
+mite07.pgm
+mite08.pgm
+mite09.pgm
+mite10.pgm
+mite11.pgm
+mite12.pgm
+mite13.pgm
+mite14.pgm
+mite15.pgm
