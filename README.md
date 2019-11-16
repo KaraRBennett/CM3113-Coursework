@@ -6,9 +6,12 @@ The following is my coursework submission for the third year moduel CM3113 Compu
 * Generate a 3D Depth Map from either the Sobel or DoG
 * Apply a Median Filter to the 3D Depth Map
 * Generate an Extended Depth of Field image form the 3D Depth Map
+
 <br/>
+
 The program takes in a stack of .pgm images (provided as a newline seperated file containing the filenames of the images) whose dimensions are 1500 X 1500 or less. The program then generates five images. These images are; the first image in the stack, the Mean Image, the first image convoluted by either Sobel or DoG, the Depth Map (post Median Filtering if applied), and the Extended Depth of Field of the image stack. Exmaple images can be found in ImageStack.
 
+<br/>
 <br/>
 
 ## Instructions to Run
