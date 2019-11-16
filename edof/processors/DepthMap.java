@@ -1,6 +1,10 @@
-package edof;
+//c1645152
+
+package edof.processors;
 
 import java.util.ArrayList;
+
+import edof.Image;
 
 public class DepthMap {
 
@@ -23,7 +27,7 @@ public class DepthMap {
     public Image getDepthMapScaled() {
         return depthMapScaled;
     }
-
+    
 
     private void calculateDepthMap() {
         depthMap = new Image(imageStack.get(0).depth, imageStack.get(0).width, imageStack.get(0).height);

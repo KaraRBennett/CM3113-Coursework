@@ -1,4 +1,4 @@
-package edof;
+package edof.helpers;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -12,8 +12,9 @@ public class ImageParser {
     private String filename;
     private String directory;
 
+
+    //Method to split input string into filename and directory
     public ImageParser(String input) {
-        //Split input string into filename and directory
         String[] tmp = input.split("/");
         filename = tmp[tmp.length - 1];
         if (tmp.length > 1) {
@@ -45,7 +46,7 @@ public class ImageParser {
     }
 
 
-    //Method to get each image file from a file containaing a newline seperated list of files
+    //Method to get each image file from a file containaing a newline seperated list of images
     private ArrayList<String> getImageFiles() {
         ArrayList<String> imageFiles = new ArrayList<String>();
 

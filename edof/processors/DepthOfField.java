@@ -1,6 +1,10 @@
-package edof;
+//c1645152
+
+package edof.processors;
 
 import java.util.ArrayList;
+
+import edof.Image;
 
 public class DepthOfField {
 

@@ -1,4 +1,4 @@
-package edof;
+package edof.helpers;
 
 public class Debug {
 

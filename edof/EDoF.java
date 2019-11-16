@@ -1,13 +1,14 @@
+//c1645152
+
 package edof;
 
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-import edof.DepthMap;
-import edof.DepthOfField;
-import edof.ImageParser;
-import edof.Mean;
-import edof.Sobel;
-import jdk.internal.dynalink.beans.StaticClass;
+import edof.Image;
+import edof.helpers.*;
+import edof.processors.*;
 
 public class EDoF{
 
@@ -15,13 +16,16 @@ public class EDoF{
     private static boolean medianFiltering = false;
     private static boolean spacialCoherenceFiltering = false;
     private static boolean gaussiansConvultionKernel = false;
+    private static int gaussianSigma;
 
     private static ArrayList<Image> imageStack;
     private static Mean mean;
     private static Image meanImg;
-    private static ArrayList<Image> sobelImageStack;
+    private static ArrayList<Image> convolutionImageStack;
+    private static GaussianKernel gaussianKernel;
     private static DepthMap depthMap;
     private static Image depthMapImg;
+    private static MedianFilter medianFilter;
     private static DepthOfField depthOfField;
     private static Image depthOfFieldImg;
 
@@ -34,7 +38,7 @@ public class EDoF{
         imageStack = imageParser.getImageStack();
 
 
-        //Set values for command line arguments
+        //Retrive values of command line arguments
         if (args.length > 1 && args[1].equals("1")) {
             medianFiltering = true;
         }
@@ -43,6 +47,10 @@ public class EDoF{
         }
         if (args.length > 3 && args[3].toLowerCase().equals("d")) {
             gaussiansConvultionKernel = true;
+            if (args.length > 4) {
+                gaussianSigma = Integer.parseInt(args[4]);
+
+            }
         }
 
 
@@ -55,24 +63,38 @@ public class EDoF{
         
         
         if (gaussiansConvultionKernel) {
-            System.out.println("\Guassian's Convultion Not Yet Implemented");
+            //Generate Difference of Gaussian for each image in the stack and add to array
+            System.out.println("\nCreating Gaussian convolution image stack");
+            convolutionImageStack = new ArrayList<Image>();
+            gaussianKernel = new GaussianKernel(gaussianSigma);
+            System.out.println("Images reamining: \t");
+            int count = imageStack.size();
+            for (Image i : imageStack) {
+                System.out.print(count + " ");
+                convolutionImageStack.add(new DifferenceOfGaussian(i, gaussianSigma, gaussianKernel).getDiffOfGaussian());
+                count--;
+            }
         } else {
             //Generate Sobel for each image in the stack and add to array
-            System.out.println("\nCreating Sobel Image Stack");
-            sobelImageStack = new ArrayList<Image>();
+            System.out.println("\nCreating Sobel convolution image stack");
+            convolutionImageStack = new ArrayList<Image>();
+            System.out.println("Images reamining: \t");
+            int count = imageStack.size();
             for (Image i : imageStack) {
-                sobelImageStack.add(new Sobel(i).getSobel());
+                System.out.print(count + " ");
+                convolutionImageStack.add(new Sobel(i).getSobel());
+                count--;
             }
         }
 
-        //Create 3D Depth Map and related image
+        //Create 3D Depth Map
         System.out.println("\nCreating 3D Depth Map");
-        depthMap = new DepthMap(sobelImageStack);
+        depthMap = new DepthMap(convolutionImageStack);
         depthMapImg = depthMap.getDepthMap();
 
         if (medianFiltering) { 
             System.out.println("\nApplying median filter");
-            MedianFilter medianFilter = new MedianFilter(depthMapImg);
+            medianFilter = new MedianFilter(depthMapImg);
             depthMapImg = medianFilter.getMedianFilteredDepthMap();
         }
 
@@ -89,15 +111,14 @@ public class EDoF{
         if (spacialCoherenceFiltering) {
             spacialCoherenceFiltering(i);
         }
-        if (sobelConvolution) {
-            sobelConvolution(i);
-        }
         */
 
 
         //Generate output images
         Debug.printSaveFileHeader();
-        String saveName = imageParser.getFilenameExtensionless() + "-" + System.currentTimeMillis();
+        LocalDateTime dateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY.MM.dd.HH.mm.ss");
+        String saveName = imageParser.getFilenameExtensionless() + "-" + dateTime.format(formatter);
 
         Debug.printString(saveName + "-first.pgm");
         imageStack.get(0).WritePGM(saveName + "-first.pgm");
@@ -106,7 +127,7 @@ public class EDoF{
         meanImg.WritePGM(saveName + "-mean.pgm");
 
         Debug.printString(saveName + "-convolution.pgm");
-        sobelImageStack.get(0).WritePGM(saveName + "-convolution.pgm");
+        convolutionImageStack.get(0).WritePGM(saveName + "-convolution.pgm");
 
         Debug.printString(saveName + "-depth.pgm");
         depthMapImg.WritePGM(saveName + "-depth.pgm");
