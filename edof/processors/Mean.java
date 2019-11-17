@@ -17,24 +17,25 @@ public class Mean{
         calculateMean();
     }
 
-    public Image getMean() {
-        return meanImg;
-    }
 
     private void calculateMean() {
+        int totalIntensity;
         meanImg = new Image(imageStack.get(0).depth, imageStack.get(0).width, imageStack.get(0).height);
 
         for (int y = 0; y < meanImg.height; y++) {
             for (int x = 0; x < meanImg.width; x++) {
-                
-                int totalIntensity = 0;
-                
+                totalIntensity = 0;
                 for (Image i : imageStack) {
                     totalIntensity += i.pixels[x][y];
                 }
-
                 meanImg.pixels[x][y] = (int)totalIntensity / imageStack.size();
             }
         }        
     }
+
+
+    public Image getMean() {
+        return meanImg;
+    }
+
 }

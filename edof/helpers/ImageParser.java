@@ -34,9 +34,9 @@ public class ImageParser {
         ArrayList<String> imageFiles = getImageFiles();
         ArrayList<Image> imageStack = new ArrayList<Image>();
 
-        Debug.printReadFileHeader();
+        System.out.println("\nReading the following files: -");
         for (String i : imageFiles) {
-            Debug.printString(i);
+            System.out.println(i);
             Image img = new Image();
             img.ReadPGM(i);
             imageStack.add(img);

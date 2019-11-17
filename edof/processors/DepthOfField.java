@@ -12,6 +12,7 @@ public class DepthOfField {
     private Image depthMap;
     private Image depthOfField;
 
+
     public DepthOfField(ArrayList<Image> imageStack, Image depthMap) {
         this.imageStack = imageStack;
         this.depthMap = depthMap;
@@ -19,9 +20,6 @@ public class DepthOfField {
         calculateDepthOfField();
     }
 
-    public Image getDepthOfField() {
-        return depthOfField;
-    }
 
     private void calculateDepthOfField() {
         for (int y = 0; y < depthOfField.height; y++) {
@@ -31,4 +29,10 @@ public class DepthOfField {
             }
         }    
     }
+
+
+    public Image getDepthOfField() {
+        return depthOfField;
+    }
+    
 }

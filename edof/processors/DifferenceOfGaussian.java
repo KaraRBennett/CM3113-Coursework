@@ -25,20 +25,22 @@ public class DifferenceOfGaussian {
     }
 
 
-    public Image getDiffOfGaussian() {
-        return diffOfGaussian;
-    }
-
-
     private void calculateDiffOfGaussian() {
+        int difference;
         diffOfGaussian = new Image(original.depth, original.width, original.height);
 
         for (int y = 0; y < original.height; y++) {
             for (int x = 0; x < original.width; x++) {
-                int difference = gaussian1.pixels[x][y] - gaussian2.pixels[x][y];
+                difference = gaussian1.pixels[x][y] - gaussian2.pixels[x][y];
                 difference = Math.abs(difference);
                 diffOfGaussian.pixels[x][y] = difference;
             }
         }
     }
+
+
+    public Image getDiffOfGaussian() {
+        return diffOfGaussian;
+    }
+
 }

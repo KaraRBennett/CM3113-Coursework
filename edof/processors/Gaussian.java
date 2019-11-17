@@ -23,16 +23,10 @@ public class Gaussian {
     }
 
 
-    public Image getGaussian() {
-        return gaussian;
-    }
-
-
     private void calculateGaussian() {
         Image edgeCopy = new Image();
         edgeCopy = BorderExtrapolation.edgeCopy(original, sigma);
         int[][] borderExtrapolatedImg = edgeCopy.pixels;
-
         double cumulativeValue;
 
         for (int y = 0; y < original.height; y++) {
@@ -54,6 +48,11 @@ public class Gaussian {
                 gaussian.pixels[x][y] = (int) cumulativeValue;
             }
         }
-    }    
+    }
+    
+    
+    public Image getGaussian() {
+        return gaussian;
+    }
 
 }

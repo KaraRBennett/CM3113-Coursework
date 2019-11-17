@@ -10,39 +10,33 @@ public class DepthMap {
 
     private ArrayList<Image> imageStack;
     private Image depthMap;
-    private Image depthMapScaled;
 
-    public DepthMap(ArrayList<Image> sobelImageStack) {
-        this.imageStack = sobelImageStack;
+
+    public DepthMap(ArrayList<Image> convolutionImageStack) {
+        this.imageStack = convolutionImageStack;
         calculateDepthMap();
-        calculateDepthMapScaled();
-    }
-
-
-    public Image getDepthMap() {
-        return depthMap;
-    }
-
-
-    public Image getDepthMapScaled() {
-        return depthMapScaled;
     }
     
 
+    //Method to calculate the depth map where at each location x,y the value
+    //represents the slice of the image with the highest convolution value
     private void calculateDepthMap() {
         depthMap = new Image(imageStack.get(0).depth, imageStack.get(0).width, imageStack.get(0).height);
+        int convolutionValue;
+        int maxConvolutionValue;
+        int imageSlice;
 
         for (int y = 0; y < depthMap.height; y++) {
             for (int x = 0; x < depthMap.width; x++) {
-                int highestValue = 0;
-                int imageSlice = 0;
+                maxConvolutionValue = 0;
+                imageSlice = 0;
 
-                for(int i =0; i < imageStack.size(); i++) {
-                    int sobelValue = imageStack.get(i).pixels[x][y];
-                    if(sobelValue > highestValue) {
-                        highestValue = sobelValue;
+                for(int i = 0; i < imageStack.size(); i++) {
+                    convolutionValue = imageStack.get(i).pixels[x][y];
+                    if(convolutionValue > maxConvolutionValue) {
+                        maxConvolutionValue = convolutionValue;
                         imageSlice = i;
-                    }
+                    } 
                 }
 
                 depthMap.pixels[x][y] = imageSlice;
@@ -50,18 +44,10 @@ public class DepthMap {
             }
         }    
     }  
-    
-    
-    private void calculateDepthMapScaled() {
-        depthMapScaled = new Image(depthMap.depth, depthMap.width, depthMap.height);
 
-        int scale = (int) 255/imageStack.size();
 
-        for (int y = 0; y < depthMapScaled.height; y++) {
-            for (int x = 0; x < depthMapScaled.width; x++) {
-                int value = depthMap.pixels[x][y] * scale;
-                depthMapScaled.pixels[x][y] = value < 255? value : 255;
-            }
-        }        
+    public Image getDepthMap() {
+        return depthMap;
     }
+
 }

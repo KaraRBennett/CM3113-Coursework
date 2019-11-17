@@ -5,7 +5,7 @@ import javafx.scene.input.PickResult;
 
 public class BorderExtrapolation {
 
-    //Method to return new pixel array with n pixel edge copy
+    //Method to return new image with n pixel edge copy
     public static Image edgeCopy(Image original, int n) {
         Image extrapolated = new Image(original.depth, original.width + (n*2), original.height + (n*2));
 

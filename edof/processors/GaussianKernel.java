@@ -10,6 +10,7 @@ public class GaussianKernel {
         s2GaussianKernel = gaussianKernel(sigma * 2);
     }
     
+
     //Method to generate the gaussian kernel for a given sigma
     private double[][] gaussianKernel(int sigma) {
         int kernelSize;
@@ -41,6 +42,7 @@ public class GaussianKernel {
     }
 
 
+    //Getters to return the two differently sized kernels
     public double[][] getS1GaussianKernel() {
         return s1GaussianKernel;
     }

@@ -2,15 +2,15 @@ edof/EDoF.java
 edof/Image.java
 
 edof/helpers/BorderExtrapolation.java
-edof/helpers/Debug.java
 edof/helpers/ImageParser.java
 
 edof/processors/DepthMap.java
 edof/processors/DepthOfField.java
 edof/processors/DifferenceOfGaussian.java
 edof/processors/Gaussian.java
-edof/processors/GaussianProcessor.java
+edof/processors/GaussianKernel.java
 edof/processors/Mean.java
 edof/processors/MedianFilter.java
+edof/processors/ScaledDepthMap.java
 edof/processors/Sobel.java
 edof/processors/SpatialCoherence.java

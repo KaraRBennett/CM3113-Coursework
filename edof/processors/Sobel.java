@@ -23,11 +23,6 @@ public class Sobel {
     }
 
 
-    public Image getSobel() {
-        return sobelImg;
-    }
-
-
     //Method to initalise Gx mask
     private int[][] initaliseGx() {
         gx = new int[3][3];
@@ -85,7 +80,6 @@ public class Sobel {
 
                 //Calucation of gradient from sumX and sumY
                 gradient = Math.sqrt(Math.pow(sumX, 2) + Math.pow(sumY, 2)) / 4;
-                //System.out.println(gradient);
                 if(gradient > 255) { 
                     gradient = 255;
                 } else if (gradient < 0) {
@@ -94,8 +88,13 @@ public class Sobel {
 
                 //Write gradient value to sobelImg
                 sobelImg.pixels[x][y] = (int)gradient;
-
             }
         }
     }
+
+
+    public Image getSobel() {
+        return sobelImg;
+    }
+
 }

@@ -25,6 +25,7 @@ public class EDoF{
     private static GaussianKernel gaussianKernel;
     private static DepthMap depthMap;
     private static Image depthMapImg;
+    private static Image scaledDepthMap;
     private static MedianFilter medianFilter;
     private static DepthOfField depthOfField;
     private static Image depthOfFieldImg;
@@ -87,52 +88,59 @@ public class EDoF{
             }
         }
 
+
         //Create 3D Depth Map
         System.out.println("\nCreating 3D Depth Map");
         depthMap = new DepthMap(convolutionImageStack);
         depthMapImg = depthMap.getDepthMap();
 
+
+        //If enabled, apply Median Filter
         if (medianFiltering) { 
-            System.out.println("\nApplying median filter");
+            System.out.println("\nApplying Median Filtering");  
             medianFilter = new MedianFilter(depthMapImg);
             depthMapImg = medianFilter.getMedianFilteredDepthMap();
         }
 
+        //If enabled, apply Spacal Cohenerece Filtering
+        if (spacialCoherenceFiltering) {
+            System.out.println("\nApplying Spatial Coherence");
+            SpatialCoherence spatialCoherence = new SpatialCoherence(depthMapImg, imageStack);
+            depthMapImg = spatialCoherence.getSpatialCoherence();
+        }
+
+
         //Create Extended Depth of Field Image
-        System.out.println("\nCreating Exetend Depth of Field Image");
+        System.out.println("\nCreating Exetended Depth of Field Image");
         depthOfField = new DepthOfField(imageStack, depthMapImg);
         depthOfFieldImg = depthOfField.getDepthOfField();
 
 
-        //Get scaled depth map
-        depthMapImg = depthMap.getDepthMapScaled();
+        //Get scaled Depth Map
+        scaledDepthMap = ScaledDepthMap.getScaledDepthMap(depthMapImg, imageStack.size());
 
-        /*
-        if (spacialCoherenceFiltering) {
-            spacialCoherenceFiltering(i);
-        }
-        */
 
 
         //Generate output images
-        Debug.printSaveFileHeader();
         LocalDateTime dateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY.MM.dd.HH.mm.ss");
         String saveName = imageParser.getFilenameExtensionless() + "-" + dateTime.format(formatter);
 
-        Debug.printString(saveName + "-first.pgm");
+        System.out.println("\nSaving files with the following file names:");
+
+        System.out.println(saveName + "-first.pgm");
         imageStack.get(0).WritePGM(saveName + "-first.pgm");
 
-        Debug.printString(saveName + "-mean.pgm");
+        System.out.println(saveName + "-mean.pgm");
         meanImg.WritePGM(saveName + "-mean.pgm");
 
-        Debug.printString(saveName + "-convolution.pgm");
+        System.out.println(saveName + "-convolution.pgm");
         convolutionImageStack.get(0).WritePGM(saveName + "-convolution.pgm");
 
-        Debug.printString(saveName + "-depth.pgm");
-        depthMapImg.WritePGM(saveName + "-depth.pgm");
+        System.out.println(saveName + "-depth.pgm");
+        scaledDepthMap.WritePGM(saveName + "-depth.pgm");
 
-        Debug.printString(saveName + "-edof.pgm");
+        System.out.println(saveName + "-edof.pgm");
         depthOfFieldImg.WritePGM(saveName + "-edof.pgm");
     }
 

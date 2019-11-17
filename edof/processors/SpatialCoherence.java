@@ -3,70 +3,102 @@
 package edof.processors;
 
 import java.lang.Math;
+import java.util.List;
 import java.util.ArrayList;
+
+import edof.Image;
+import edof.helpers.BorderExtrapolation;
+import edof.processors.ScaledDepthMap;
+
 
 public class SpatialCoherence {
 
-    /*
-
-    private Image original;
-    private Image depthMap;
-    private int stackDepth;
+    private Image spatialCoherence;
     private int iterations = 10;
 
-    public SpatialCoherence(Image img, int stackDepth) {
-        original = img;
-        this.stackDepth = stackDepth;
 
-        calculateSpatialCoherence(); //Perform an initial caluculation based off the original image
-        for (int i = 1; i < iterations; i++) {
-            calculateSpatialCoherence();
-        }
+    public SpatialCoherence(Image d0, ArrayList<Image> imageStack) {
+        calculateSpatialCoherence(d0, imageStack);
     }
 
 
-    public Image getDepthMap() {
-        return depthMap;
+    public Image getSpatialCoherence() {
+        return spatialCoherence;
     }
 
-    private calculateSpatialCoherence(Image source) {
-        Image result = new Image(source.depth, source.width, source.height);
 
-        for (int y = 0; y < source.height; y++) {
-            for (int x = 0; x < source.width; x++) {
+    private void calculateSpatialCoherence(Image d0, ArrayList<Image> imageStack) {
+        Image currentDt = d0;
 
-                //Skip image boundaries
-                if (!(y == 0 || y == source.height - 1 || x == 0 || x == source.width - 1)) {
+        int convolutionValue;
+        int highestValue;
+        int imageSlice;
+        double spatialCoherencyWeighting;
 
-                    ArrayList<Integer> neighbourhood = new ArrayList<Integer>();
+        for (int i = 0; i < iterations; i++) {
 
-                    for (int i = -1; i <= 1; i++) {
-                        for (int j = -1; j <= 1; j++) {
-                            neighbourhood.add(source.pixels[x + j][y + i]);
+            //currentDt = ScaledDepthMap.getScaledDepthMap(currentDt, imageStack.size());
+            Image previousDt = new Image();
+            previousDt = BorderExtrapolation.edgeCopy(currentDt, 1);
+            currentDt = new Image(d0.depth, d0.width, d0.height);
+            previousDt.WritePGM("previousDT" + i + ".pgm");
+            
+
+            for (int y = 0; y < d0.height; y++) {
+                for (int x = 0; x < d0.width; x++) {
+
+                    ArrayList<Integer> previousDtNeighbourhood = new ArrayList<Integer>();
+
+                    for (int j = -1; j <= 1; j++) {
+                        for (int k = -1; k<= 1; k++) {
+                            previousDtNeighbourhood.add(previousDt.pixels[x + j + 1][y + k + 1]);
                         }
                     }
+                    //previousDtNeighbourhood.set(4, i);
 
-                    spatialValue = Math.pow(1 / (0.0001 + standardDeviation(neighbourhood) * centerPixel), 2);
-
-                    if (spatialValue > stackDepth) {
-                        spatialValue = stackDepth;
-                    } else if (spatialValue < 0) {
-                        spatialValue = 0;
-                    }
-
-                    result.pixels[x][y] = (int)spatialValue;
+                    spatialCoherencyWeighting = spatialCoherencyWeighting(previousDtNeighbourhood);
+                    currentDt.pixels[x][y] = maxConvolutionSCWProduct(imageStack, spatialCoherencyWeighting, x, y);
 
                 }
-            }    
+
+            }
         }
 
-        depthMap = result;
+        spatialCoherence = currentDt;
+
     }
 
 
-    private float standardDeviation(ArrayList<Integer> values) {
-        float mean = 0;
-        float variance = 0;
+    private int maxConvolutionSCWProduct(ArrayList<Image> imageStack, double spatialCoherencyWeighting, int x, int y) {
+        int imageSlice = 0; 
+        double convolutionValue;
+        double convolutionSCWProduct;
+        double maxConvolutionSCWProduct = 0;
+
+        for (int i = 0; i < imageStack.size(); i++) {
+            convolutionValue = imageStack.get(i).pixels[x][y];
+            convolutionSCWProduct = convolutionValue * spatialCoherencyWeighting;
+            //System.out.println(spatialCoherencyWeighting);
+            if (convolutionSCWProduct > maxConvolutionSCWProduct) {
+                maxConvolutionSCWProduct = convolutionSCWProduct;
+                imageSlice = i;
+            }
+        }  
+
+        return imageSlice;
+
+    }
+
+
+    private double spatialCoherencyWeighting(ArrayList<Integer> values) {
+        double neighbourhoodSD = standardDeviation(values);
+        return Math.pow( (1 / 0.0001 + neighbourhoodSD), 2 );
+    }
+
+
+    private double standardDeviation(ArrayList<Integer> values) {
+        double mean = 0;
+        double variance = 0;
 
         for (int n : values) {
             mean += n;
@@ -81,5 +113,4 @@ public class SpatialCoherence {
         return Math.sqrt(variance);
     }
 
-    */
 }
