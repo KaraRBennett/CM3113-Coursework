@@ -28,87 +28,72 @@ public class SpatialCoherence {
 
 
     private void calculateSpatialCoherence(Image d0, ArrayList<Image> imageStack) {
-        Image currentDt = d0;
 
-        int convolutionValue;
-        int highestValue;
-        int imageSlice;
-        double spatialCoherencyWeighting;
+        Image previousDepthMap = d0;
+        previousDepthMap = BorderExtrapolation.edgeCopy(previousDepthMap, 1);
+    
+        for (int iteration = 0; iteration < iterations; iteration++) {
 
-        for (int i = 0; i < iterations; i++) {
-
-            //currentDt = ScaledDepthMap.getScaledDepthMap(currentDt, imageStack.size());
-            Image previousDt = new Image();
-            previousDt = BorderExtrapolation.edgeCopy(currentDt, 1);
-            currentDt = new Image(d0.depth, d0.width, d0.height);
-            previousDt.WritePGM("previousDT" + i + ".pgm");
-            
+            Image newIteration = new Image(d0.depth, d0.width, d0.height);
 
             for (int y = 0; y < d0.height; y++) {
                 for (int x = 0; x < d0.width; x++) {
+                    double maxConvolutionValue = 0;
+                    int imageSlice = 0;
 
-                    ArrayList<Integer> previousDtNeighbourhood = new ArrayList<Integer>();
-
-                    for (int j = -1; j <= 1; j++) {
-                        for (int k = -1; k<= 1; k++) {
-                            previousDtNeighbourhood.add(previousDt.pixels[x + j + 1][y + k + 1]);
+                    int[] spaitalValues = new int[9];
+                    for (int j = 0; j <= 2; j++) {
+                        for (int k = 0; k <= 2; k++) {
+                            spaitalValues[j * 3 + k] = previousDepthMap.pixels[x + k][y + j];
                         }
                     }
-                    //previousDtNeighbourhood.set(4, i);
+    
+                    for(int i = 0; i < imageStack.size(); i++) {
+                        int convolutionValue = imageStack.get(i).pixels[x][y];
+                        spaitalValues[4] = i;
+                        double spaitalWeighting = spatialCoherencyWeighting(spaitalValues);
 
-                    spatialCoherencyWeighting = spatialCoherencyWeighting(previousDtNeighbourhood);
-                    currentDt.pixels[x][y] = maxConvolutionSCWProduct(imageStack, spatialCoherencyWeighting, x, y);
+                        double n = convolutionValue * spaitalWeighting;
 
+                        if(n > maxConvolutionValue) {
+                            maxConvolutionValue = n;
+                            imageSlice = i;
+                        } 
+                    }
+    
+                    newIteration.pixels[x][y] = imageSlice;
+    
                 }
+            } 
 
-            }
+            previousDepthMap = newIteration;
+            previousDepthMap = BorderExtrapolation.edgeCopy(previousDepthMap, 1);
+            spatialCoherence = newIteration;
+
         }
 
-        spatialCoherence = currentDt;
-
     }
 
 
-    private int maxConvolutionSCWProduct(ArrayList<Image> imageStack, double spatialCoherencyWeighting, int x, int y) {
-        int imageSlice = 0; 
-        double convolutionValue;
-        double convolutionSCWProduct;
-        double maxConvolutionSCWProduct = 0;
-
-        for (int i = 0; i < imageStack.size(); i++) {
-            convolutionValue = imageStack.get(i).pixels[x][y];
-            convolutionSCWProduct = convolutionValue * spatialCoherencyWeighting;
-            //System.out.println(spatialCoherencyWeighting);
-            if (convolutionSCWProduct > maxConvolutionSCWProduct) {
-                maxConvolutionSCWProduct = convolutionSCWProduct;
-                imageSlice = i;
-            }
-        }  
-
-        return imageSlice;
-
-    }
-
-
-    private double spatialCoherencyWeighting(ArrayList<Integer> values) {
+    private double spatialCoherencyWeighting(int[] values) {
         double neighbourhoodSD = standardDeviation(values);
-        return Math.pow( (1 / 0.0001 + neighbourhoodSD), 2 );
+        return Math.pow( (1 / (0.0001 + neighbourhoodSD)), 2 );
     }
 
 
-    private double standardDeviation(ArrayList<Integer> values) {
+    private double standardDeviation(int[] values) {
         double mean = 0;
         double variance = 0;
 
         for (int n : values) {
             mean += n;
         }
-        mean /= values.size();
+        mean /= values.length;
 
         for (int n : values) {
             variance += Math.pow(n - mean, 2);
         }
-        variance /= values.size();
+        variance /= values.length;
 
         return Math.sqrt(variance);
     }

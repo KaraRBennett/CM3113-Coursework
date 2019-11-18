@@ -68,7 +68,7 @@ public class EDoF{
             System.out.println("\nCreating Gaussian convolution image stack");
             convolutionImageStack = new ArrayList<Image>();
             gaussianKernel = new GaussianKernel(gaussianSigma);
-            System.out.println("Images reamining: \t");
+            System.out.print("\nImages reamining: ");
             int count = imageStack.size();
             for (Image i : imageStack) {
                 System.out.print(count + " ");
@@ -79,7 +79,7 @@ public class EDoF{
             //Generate Sobel for each image in the stack and add to array
             System.out.println("\nCreating Sobel convolution image stack");
             convolutionImageStack = new ArrayList<Image>();
-            System.out.println("Images reamining: \t");
+            System.out.print("\nImages reamining: \t");
             int count = imageStack.size();
             for (Image i : imageStack) {
                 System.out.print(count + " ");
@@ -90,7 +90,7 @@ public class EDoF{
 
 
         //Create 3D Depth Map
-        System.out.println("\nCreating 3D Depth Map");
+        System.out.println("\n\nCreating 3D Depth Map");
         depthMap = new DepthMap(convolutionImageStack);
         depthMapImg = depthMap.getDepthMap();
 
